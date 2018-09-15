@@ -1,0 +1,3 @@
+google-cloud-storage==1.10.0
+requests==2.19.0
+datetime
