@@ -5,6 +5,7 @@ import datetime
 import requests
 from google.cloud import storage
 
+
 '''
 Extract all the articles from www.corriere.it XML and save in bucket
 '''
