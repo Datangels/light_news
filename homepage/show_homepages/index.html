@@ -1,0 +1,26 @@
+
+		<html>
+			<body>
+				<p>This example uses the HTML DOM to assign an "onclick" event to a p element.</p>
+				
+				<p id="europa">Europa.</p>
+				
+				<script>
+				
+					document.getElementById("europa").onclick = function() {show_countries({'italy': {'newspaper': 'ilmessaggero', 'domain': 'it'}})};
+					
+					function show_countries(country) {
+						
+						alert("CIAO");
+
+						// for (var i = 0; i < map_countries.length; i++) {
+						// 	var div = document.createElement('div');
+						// 	var x = document.getElementsByClassName("example");
+						// 	x.appendChild(div);
+						// }
+					}
+					
+				</script>		
+			</body>
+		</html>
+		
