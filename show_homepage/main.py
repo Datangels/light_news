@@ -33,6 +33,7 @@ html = """
 					function show_countries(continent) {
 						delete_buttons("buttons_countries");
 						delete_buttons("buttons_newspapers");
+						delete_buttons("articles");
 						for (var country in country_map[continent]) {
 						    var button_country = document.createElement("button");
 							button_country.setAttribute('onclick', 'show_newspapers("' + continent + '", "' + country + '")')   
@@ -44,9 +45,10 @@ html = """
 					
 					function show_newspapers(continent, country) {
 						delete_buttons("buttons_newspapers");
+						delete_buttons("articles");
 						for (var newspaper in country_map[continent][country]) {
 						  	var button_newspaper = document.createElement("button");
-							button_newspaper.setAttribute('onclick', 'show_articles()')  
+							button_newspaper.setAttribute('onclick', 'show_articles("' + country + '", "' + newspaper + '")')  
 							button_newspaper.id = "button_newspaper";
 						    button_newspaper.textContent = newspaper;
 						    button_newspaper.type="button"
@@ -54,17 +56,34 @@ html = """
 						}
 					}
 
-					function show_articles() {
-						fetch('https://api.ipify.org?format=json')
+					function show_articles(country, newspaper) {
+						delete_buttons("articles");
+						var url = 'https://us-central1-lightnews-212422.cloudfunctions.net/return_homepage?country=' + country + '&newspaper=' + newspaper; 
+						fetch(url, {
+							mode: "cors",
+							headers: {
+								"Content-Type": "application/json",
+								"Access-Control-Allow-Origin": "https://8080-dot-3075438-dot-devshell.appspot.com/?authuser=0",
+								"Access-Control-Allow-Methods": "GET, POST",
+								"Access-Control-Allow-Headers": "Authorization",
+								"Access-Control-Allow-Credentials": "true"											
+					        }
+						})
 						    .then((res) => res.json())
 						    .then(output => {
-						        var data = output;
-						        var ip = data.ip;
-						        alert(ip);
+                                for(var i in output.articles) {
+                                    var url = output.articles[i]['url'];
+                                    var div_article = document.createElement('div');
+                                    var a_article = document.createElement('a');
+                                    a_article.setAttribute('href', url);
+                                    a_article.textContent = url;
+                                    div_article.appendChild(a_article);
+                                    document.getElementById('articles').appendChild(div_article);
+                                }							    
 						    } 
 						)
 					}
-
+		
 					function delete_buttons(id) {
 						var buttons =  document.getElementById(id);
 						while (buttons.hasChildNodes()) {

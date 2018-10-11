@@ -30,8 +30,8 @@ def get_homepage_articles(data, context):
 		else:
 			old_articles += 1
 
-	print('New articles: ' + new_articles)
-	print('Old articles: ' + old_articles)
+	print('New articles: ' + str(new_articles))
+	print('Old articles: ' + str(old_articles))
 
 def manage_bucket(bucket_name):
 	storage_client = storage.Client()

@@ -12,7 +12,6 @@ from google.cloud import storage
 https://us-central1-lightnews-212422.cloudfunctions.net/get_homepage?
 	url=https://www.timeslive.co.za/&
 	newspaper=timeslive&
-	domain=co_za&
 	country=sudafrica
 '''
 
@@ -23,11 +22,10 @@ def get_homepage(request):
 	params = {
 		'url': request.args.get('url'),
 		'newspaper': request.args.get('newspaper'),
-		'domain': request.args.get('domain'),
 		'country': request.args.get('country')
 	}
 	
-	bucket = manage_bucket(params['country'] + '__' + params['newspaper'] + '__' + params['domain'])
+	bucket = manage_bucket(params['country'] + '__' + params['newspaper'])
 
 	timestamp = generate_timestamp()
 	
@@ -86,8 +84,7 @@ def send_output_to_storage(bucket, timestamp, articles):
 if __name__ == "__main__":
 	print(get_homepage(
 		{
-			'url': 'https://mexiconewsdaily.com/',
-			'newspaper': 'mexiconewsdaily',
-			'domain': 'com',
-			'country': 'Mexico'
+			'url': 'https://www.straitstimes.com/',
+			'newspaper': 'straitstimes',
+			'country': 'Singapore'
 		}))
