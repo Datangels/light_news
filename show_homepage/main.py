@@ -1,6 +1,5 @@
 import json
 from google.cloud import storage
-from bs4 import BeautifulSoup
 
 storage_client = storage.Client()
 bucket_name = 'newspaper_map'
@@ -31,9 +30,9 @@ html = """
 					}
 
 					function show_countries(continent) {
-						delete_buttons("buttons_countries");
-						delete_buttons("buttons_newspapers");
-						delete_buttons("articles");
+						delete_childs("buttons_countries");
+						delete_childs("buttons_newspapers");
+						delete_childs("articles");
 						for (var country in country_map[continent]) {
 						    var button_country = document.createElement("button");
 							button_country.setAttribute('onclick', 'show_newspapers("' + continent + '", "' + country + '")')   
@@ -44,8 +43,8 @@ html = """
 					}
 					
 					function show_newspapers(continent, country) {
-						delete_buttons("buttons_newspapers");
-						delete_buttons("articles");
+						delete_childs("buttons_newspapers");
+						delete_childs("articles");
 						for (var newspaper in country_map[continent][country]) {
 						  	var button_newspaper = document.createElement("button");
 							button_newspaper.setAttribute('onclick', 'show_articles("' + country + '", "' + newspaper + '")')  
@@ -57,25 +56,23 @@ html = """
 					}
 
 					function show_articles(country, newspaper) {
-						delete_buttons("articles");
+						delete_childs("articles");
 						var url = 'https://us-central1-lightnews-212422.cloudfunctions.net/return_homepage?country=' + country + '&newspaper=' + newspaper; 
-						fetch(url, {
-							mode: "cors",
-							headers: {
-								"Content-Type": "application/json",
-								"Access-Control-Allow-Origin": "https://8080-dot-3075438-dot-devshell.appspot.com/?authuser=0",
-								"Access-Control-Allow-Methods": "GET, POST",
-								"Access-Control-Allow-Headers": "Authorization",
-								"Access-Control-Allow-Credentials": "true"											
-					        }
-						})
+						fetch(url)
 						    .then((res) => res.json())
 						    .then(output => {
+						    	var saving = output.saving;
+								var div_saving = document.createElement('div');
+								div_saving.setAttribute('id', 'saving');
+								div_saving.textContent = 'Data saved: ' + saving;
+								document.getElementById('articles').appendChild(div_saving);
                                 for(var i in output.articles) {
                                     var url = output.articles[i]['url'];
                                     var div_article = document.createElement('div');
+                                    div_article.setAttribute('id', url);
                                     var a_article = document.createElement('a');
-                                    a_article.setAttribute('href', url);
+                                    a_article.setAttribute('href', '#');
+									a_article.setAttribute('onclick', 'show_article("' + country + '", "' + newspaper + '", "' + url + '")')  
                                     a_article.textContent = url;
                                     div_article.appendChild(a_article);
                                     document.getElementById('articles').appendChild(div_article);
@@ -83,11 +80,34 @@ html = """
 						    } 
 						)
 					}
+					
+					function show_article(country, newspaper, article) {
+						var url = 'https://us-central1-lightnews-212422.cloudfunctions.net/return_article?country=' + country + '&newspaper=' + newspaper + '&article=' + article; 
+						fetch(url)
+						    .then((res) => res.json())
+						    .then(output => {
+								var timestamp = output["timestamp"];
+                                var div_timestamp = document.createElement('div');
+                                div_timestamp.textContent = timestamp;
+                                document.getElementById(article).appendChild(div_timestamp);
+						    	
+                                var saving = output["saving"];
+                                var div_saving = document.createElement('div');
+                                div_saving.textContent = saving;
+                                document.getElementById(article).appendChild(div_saving);
+                                
+                                var text = output["text"];
+                                var div_article = document.createElement('div');
+                                div_article.textContent = text;
+                                document.getElementById(article).appendChild(div_article);
+						    } 
+						)
+					}
 		
-					function delete_buttons(id) {
-						var buttons =  document.getElementById(id);
-						while (buttons.hasChildNodes()) {
-							buttons.removeChild(buttons.lastChild);
+					function delete_childs(id) {
+						var childs =  document.getElementById(id);
+						while (childs.hasChildNodes()) {
+							childs.removeChild(childs.lastChild);
 						}
 					}
 					
@@ -105,7 +125,7 @@ html = """
 
 
 def show_homepage(request):
-	return BeautifulSoup(html).prettify()
+	return html
 
 			
 if __name__ == "__main__":
