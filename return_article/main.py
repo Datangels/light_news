@@ -1,28 +1,24 @@
 import json
 from google.cloud import storage
-storage_client = storage.Client()
 
+storage_client = storage.Client()
+bucket = storage_client.get_bucket('newspapers_articles___articles')
 
 def return_article(request):
 
-	print('Starting returning article...')
+	country = request.args.get('country').lower()
+	newspaper = request.args.get('newspaper')
+	article = request.args.get('article')
 	
-	params = {
-		'country': request.args.get('country').lower(),
-		'newspaper': request.args.get('newspaper'),
-		'article': request.args.get('article')
-	}
+	blob_article = bucket.get_blob(country + '__' + newspaper + '/' + article.replace('/', '_'))
+	blob_article_string = blob_article.download_as_string().decode('utf-8')
 	
-	bucket_name = params['country'] + '__' + params['newspaper'] + '___articles'
-	bucket = storage_client.get_bucket(bucket_name)
-	
-	blob_article = bucket.get_blob(params['article'].replace('/', '_'))
-	return blob_article.download_as_string().decode('utf-8')	
+	return (blob_article_string , 200, {'Access-Control-Allow-Origin': '*'})
 
 
 if __name__ == "__main__":
 	print(return_article({
-		'country': 'nigeria',
-		'newspaper': 'punchng',
-		'article': 'https://punchng.com/18-year-old-okada-rider-killed-during-collision-with-camel/'
+		'country': 'congo',
+		'newspaper': 'groupelavenir',
+		'article': 'http:__groupelavenir.org_apres-le-stade-tata-raphael-le-fcc-en-demonstration-de-force-a-mbuji-mayi_'
 		}))
