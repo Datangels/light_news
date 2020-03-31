@@ -3,8 +3,10 @@ from os import getenv
 from psycopg2 import OperationalError
 from psycopg2.pool import SimpleConnectionPool
 
+db_location = 'ADD_DB_LOCATION'
+
 # TODO(developer): specify SQL connection details
-CONNECTION_NAME = getenv('INSTANCE_CONNECTION_NAME', 'lightnews-212422:us-central1:lightnewsprod')
+CONNECTION_NAME = getenv('INSTANCE_CONNECTION_NAME', db_location)
 DB_USER = getenv('POSTGRES_USER', 'postgres')
 DB_PASSWORD = getenv('POSTGRES_PASSWORD', 'google')
 DB_NAME = getenv('POSTGRES_DATABASE', 'test')
@@ -38,7 +40,7 @@ def postgres_demo(request):
     if not pg_pool:
         try:
             print("CIAO")
-            __connect('/cloudsql/lightnews-212422:us-central1:lightnewsprod/.s.PGSQL.5432')
+            __connect('/cloudsql/db_location/.s.PGSQL.5432')
         except OperationalError:
             # If production settings fail, use local development ones
             __connect('localhost')
